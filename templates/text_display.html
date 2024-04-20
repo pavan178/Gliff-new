@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <head>
+        <title>Caliope</title>
+        <style>
+            /* Your CSS styles here */
+            header {
+                background-color: #333;
+                color: white;
+                padding: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+    
+            .logo {
+                font-size: 24px;
+                font-weight: bold;
+            }
+    
+            .menu {
+                display: flex;
+            }
+    
+            .menu-button {
+                margin-right: 10px;
+                color: white;
+                text-decoration: none;
+            }
+    
+            .menu-button:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="logo">Calliope</div>
+            <nav class="menu">
+                <a class="menu-button" href="/">Home</a>
+                <!-- Add more menu buttons here -->
+                <!-- Example: <a class="menu-button" href="/about">About</a> -->
+            </nav>
+        </header>
+
+
+
+
+    <title>PDF Text Display</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            height: 100vh;
+        }
+        .text-container {
+            flex: 1;
+            margin-right: 20px;
+            flex-grow: 1;
+        }
+        /* Chat Container Styles */
+        .chat-container {
+            position: fixed;
+            bottom: 50px; /* Adjust the distance from the bottom */
+            right: 50px; /* Adjust the distance from the right */
+            width: 400px; /* Adjust the width as needed */
+            height: 500px; /* Adjust the height as needed */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            z-index: 999; /* Ensure the chat window is on top */
+            overflow-y: auto; /* Enable vertical scrolling if needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .chat-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex-grow: 1; /* Allow chat box to grow to fill remaining space */
+        }
+        .chat-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .chat-messages {
+            max-height: calc(100% - 40px); /* Adjust the height for messages */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        .chat-form input[type="text"] {
+            width: calc(100% - 70px);
+            padding: 5px;
+            margin-right: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        
+        .chat-form button {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+        #chat-answer {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Side: PDF Text Display and Speak Controls -->
+        <div class="text-container">
+            <h1>Extracted Text</h1>
+            <textarea rows="20" cols="80">{{ text }}</textarea>
+            <form id="speak-form" method="POST" action="/speak">
+                <input type="hidden" name="text" value="{{ text }}">
+                <button type="button" id="play-btn">Play</button>
+                <button type="submit" name="pause">Pause</button>
+                <button type="submit" name="resume">Resume</button>
+                <button type="submit" name="stop">Stop</button>
+            </form>
+        </div>
+
+        <!-- Right Side: Chat Window -->
+        <div class="chat-container">
+            <div class="chat-box">
+                <div class="chat-title">Chat PDF</div>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Chat messages will be displayed here -->
+                </div>
+            </div>
+            <form class="chat-form" id="chat-form" action="/" method="post">
+                <input type="text" name="question" placeholder="Type your question here" required>
+                <button type="submit">Ask</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle form submission and display chat results -->
+    <script>
+        document.getElementById('chat-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Append the chat answer above the chat input field
+                var chatMessages = document.getElementById('chat-messages');
+                var answerDiv = document.createElement('div');
+                answerDiv.textContent = data.answer;
+                chatMessages.insertBefore(answerDiv, chatMessages.firstChild);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+    <script>
+        document.getElementById('play-btn').addEventListener('click', function() {
+            var form = document.getElementById('speak-form');
+            fetch(form.action, {
+                method: form.method,
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Play the audio response
+                return response.blob();
+            })
+            .then(blob => {
+                var url = URL.createObjectURL(blob);
+                var audio = new Audio(url);
+                audio.play();
+                // Store reference to the audio element
+                window.audio = audio;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('stop-btn').addEventListener('click', function() {
+            // Stop playing the audio if it's currently playing
+            if (window.audio) {
+                window.audio.pause();
+                window.audio.currentTime = 0; // Reset audio to the beginning
+            }
+        });
+    </script>
+
+
+
+
+</body>
+</html>
