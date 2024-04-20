@@ -159,11 +159,16 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Append the chat answer above the chat input field
+                // Remove existing chat messages
                 var chatMessages = document.getElementById('chat-messages');
+                while (chatMessages.firstChild) {
+                    chatMessages.removeChild(chatMessages.firstChild);
+                }
+                
+                // Append the new chat answer
                 var answerDiv = document.createElement('div');
                 answerDiv.textContent = data.answer;
-                chatMessages.insertBefore(answerDiv, chatMessages.firstChild);
+                chatMessages.appendChild(answerDiv);
             })
             .catch(error => console.error('Error:', error));
         });
