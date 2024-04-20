@@ -7,9 +7,9 @@ from nltk.stem import WordNetLemmatizer
 from collections import defaultdict
 import string
 import io
-
+from flask import Response
 import pyttsx3
-from elevenlabs import Voice, VoiceSettings, play
+from elevenlabs import Voice, VoiceSettings, play,save
 from elevenlabs.client import ElevenLabs
 
 # Initialize the TTS engine
@@ -95,6 +95,8 @@ def index():
     
     return render_template('index.html')
 
+
+
 @app.route('/speak', methods=['POST'])
 def speak_text():
     text = request.form['text']
@@ -114,9 +116,11 @@ def speak_text():
                 settings=VoiceSettings(stability=0.71, similarity_boost=0.5, style=0.0, use_speaker_boost=True)
             )
         )
-        # Play the audio
-        
-    return play(audio)
+        # Save the audio to a temporary file
+        file_path = "temp_audio.mp3"
+        save(audio, file_path)
+        # Return the audio file as a response
+        return Response(open(file_path, 'rb'), mimetype="audio/mp3", headers={"Content-Disposition": "attachment;filename=audio.mp3"})
 
 if __name__ == "__main__":
     app.run(debug=True)

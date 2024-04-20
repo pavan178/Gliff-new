@@ -184,40 +184,45 @@
     </script>
 
     <script>
+        var audio = new Audio(); // Create an audio element
+        
         document.getElementById('play-btn').addEventListener('click', function() {
-            var form = document.getElementById('speak-form');
-            fetch(form.action, {
-                method: form.method,
-                body: new FormData(form)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                // Play the audio response
-                return response.blob();
-            })
-            .then(blob => {
-                var url = URL.createObjectURL(blob);
-                var audio = new Audio(url);
-                audio.play();
-                // Store reference to the audio element
-                window.audio = audio;
-            })
-            .catch(error => console.error('Error:', error));
+        var form = document.getElementById('speak-form');
+        var formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: form.method,
+            body: formData
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            var audioUrl = URL.createObjectURL(blob);
+            console.log('Audio URL:', audioUrl); // Log the audio URL
+            
+            // Set the audio source to the URL
+            audio.src = audioUrl;
+            
+            // Play the audio
+            audio.play()
+                .then(() => console.log('Audio started playing')) // Log success
+                .catch(error => console.error('Error playing audio:', error)); // Log error
+        })
+        .catch(error => console.error('Error:', error)); // Log fetch error
+    });
+
+        document.getElementById('pause-btn').addEventListener('click', function() {
+            audio.pause(); // Pause the audio
+        });
+
+        document.getElementById('resume-btn').addEventListener('click', function() {
+            audio.play(); // Resume playing the audio
         });
 
         document.getElementById('stop-btn').addEventListener('click', function() {
-            // Stop playing the audio if it's currently playing
-            if (window.audio) {
-                window.audio.pause();
-                window.audio.currentTime = 0; // Reset audio to the beginning
-            }
+            audio.pause(); // Pause the audio
+            audio.currentTime = 0; // Rewind the audio to the beginning
         });
     </script>
-
-
-
 
 </body>
 </html>
