@@ -64,6 +64,8 @@
         }
         /* Chat Container Styles */
         .chat-container {
+
+            
             position: fixed;
             bottom: 50px; /* Adjust the distance from the bottom */
             right: 50px; /* Adjust the distance from the right */
@@ -91,8 +93,10 @@
             margin-bottom: 5px;
         }
         .chat-messages {
-            max-height: calc(100% - 40px); /* Adjust the height for messages */
+            
+            height: 400px; /* Adjust the height as needed */
             overflow-y: auto; /* Enable vertical scrolling */
+            overflow-anchor: auto;  /* Enable vertical scrolling */
         }
         .chat-form input[type="text"] {
             width: calc(100% - 70px);
@@ -135,9 +139,11 @@
 
         <!-- Right Side: Chat Window -->
         <div class="chat-container">
+            
             <div class="chat-box">
                 <div class="chat-title">Chat PDF</div>
                 <div class="chat-messages" id="chat-messages">
+                 
                     <!-- Chat messages will be displayed here -->
                 </div>
             </div>
@@ -169,6 +175,7 @@
                 var answerDiv = document.createElement('div');
                 answerDiv.textContent = data.answer;
                 chatMessages.appendChild(answerDiv);
+                chatMessages.scrollTop = 0;
             })
             .catch(error => console.error('Error:', error));
         });
