@@ -101,12 +101,14 @@ def index():
 def speak_text():
     text = request.form['text']
     if 'pause' in request.form:
-        engine.pause()
+        # Handle pause action
+        return jsonify({'action': 'pause'})
     elif 'resume' in request.form:
-        engine.resume()
+        # Handle resume action
+        return jsonify({'action': 'resume'})
     elif 'stop' in request.form:
-        engine.stop()
-        return jsonify({'message': 'Text-to-speech stopped'})
+        # Handle stop action
+        return jsonify({'action': 'stop'})
     else:
         # Generate audio using ElevenLabs
         audio = client.generate(

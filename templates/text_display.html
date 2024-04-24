@@ -130,6 +130,8 @@
         <div class="text-container">
             <h1>Extracted Text</h1>
             <textarea rows="20" cols="80">{{ text }}</textarea>
+            
+
             <form id="speak-form" method="POST" action="/speak">
                 <input type="hidden" name="text" value="{{ text }}">
                 <button type="button" id="play-btn">Play</button>
@@ -209,19 +211,37 @@
         })
         .catch(error => console.error('Error:', error)); // Log fetch error
     });
+    document.getElementById('pause-btn').addEventListener('click', function(event) {
+    audio.pause(); // Pause the audio
+    // Send a request to Flask server to pause the audio
+    fetch('/speak', {
+        method: 'POST',
+        body: new URLSearchParams({
+            'text': 'pause' // Send the 'pause' action to the server
+        })
+    })
+    .catch(error => console.error('Error:', error));
+});
 
-        document.getElementById('pause-btn').addEventListener('click', function() {
-            audio.pause(); // Pause the audio
-        });
 
-        document.getElementById('resume-btn').addEventListener('click', function() {
-            audio.play(); // Resume playing the audio
-        });
-
-        document.getElementById('stop-btn').addEventListener('click', function() {
-            audio.pause(); // Pause the audio
-            audio.currentTime = 0; // Rewind the audio to the beginning
-        });
+    document.getElementById('stop-btn').addEventListener('click', function() {
+        
+        audio.pause(); // Pause the audio
+        audio.currentTime = 0; // Rewind the audio to the beginning
+        // Send a request to Flask server to stop the audio
+        fetch('/speak', {
+            method: 'POST',
+            body: new URLSearchParams({
+                'text': 'stop' // Send the 'stop' action to the server
+            })
+        })
+        
+        .then(response => {
+        // Handle response from the server (if needed)
+        // In this case, we ignore the response
+        console.log('Stop request sent successfully');
+    })
+    });
     </script>
 
 </body>
